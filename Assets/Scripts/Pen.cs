@@ -1,3 +1,123 @@
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Pen : MonoBehaviour
+{
+    [Header("Pen Properties")]
+    public Transform tip;
+    public Material drawingMaterial;
+    public Material tipMaterial;
+    [Range(0.01f, 0.1f)]
+    public float penWidth = 0.015f;
+    public Color[] penColors;
+
+    public Transform rightHand;
+    public Transform leftHand;
+    public float grabDistance = 0.05f;
+
+    [Header("Drawing Surface")]
+    //public GameObject canvasBox; // Reference to the specific object you want to draw on
+
+    public float offsetDistance = 0.001f;
+    private LineRenderer currentDrawing;
+    private int index;
+    private int currentColorIndex;
+
+    private void Start()
+    {
+        currentColorIndex = 0;
+        tipMaterial.color = penColors[currentColorIndex];
+    }
+
+    private void Update()
+    {
+        bool rightHandNear = Vector3.Distance(rightHand.position, transform.position) <= grabDistance;
+        bool leftHandNear = Vector3.Distance(leftHand.position, transform.position) <= grabDistance;
+        //bool isRightHandDrawing = rightHandNear && OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger);
+        //bool isLeftHandDrawing = leftHandNear && OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger);
+
+        
+        if (OVRInput.GetDown(OVRInput.Button.One))
+        {
+            SwitchColor();
+        }
+    }
+
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Start drawing if the pen touches the canvasBox
+        if (other.gameObject.name == "canvasBox")
+        {
+            StartDrawing();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        // Continue drawing as long as the pen stays on the canvasBox
+        if (other.gameObject.name == "canvasBox")
+        {
+            Draw();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // Stop drawing when the pen leaves the canvasBox
+        if (other.gameObject.name == "canvasBox")
+        {
+            currentDrawing = null;
+        }
+    }
+
+    private void StartDrawing()
+    {
+        GameObject door = GameObject.Find("openingDoor");
+        if (door != null)
+        {
+            door.SetActive(false);
+        }
+
+        // Initialize a new LineRenderer when starting to draw
+        index = 0;
+        currentDrawing = new GameObject("SurfaceDrawing").AddComponent<LineRenderer>();
+        currentDrawing.material = drawingMaterial;
+        currentDrawing.startColor = currentDrawing.endColor = penColors[currentColorIndex];
+        currentDrawing.startWidth = currentDrawing.endWidth = penWidth;
+        currentDrawing.positionCount = 1;
+        currentDrawing.SetPosition(0, tip.position);
+    }
+
+    private void Draw()
+    {
+        if (currentDrawing != null)
+        {
+            var currentPos = currentDrawing.GetPosition(index);
+            if (Vector3.Distance(currentPos, tip.position) > 0.01f)
+            {
+                index++;
+                currentDrawing.positionCount = index + 1;
+                currentDrawing.SetPosition(index, tip.position);
+            }
+        }
+    }
+
+    private void SwitchColor()
+    {
+        if (penColors.Length == 0) return;
+
+        currentColorIndex = (currentColorIndex + 1) % penColors.Length;
+        tipMaterial.color = penColors[currentColorIndex];
+    }
+}
+
+
+
 /*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -278,119 +398,3 @@ public class Pen : MonoBehaviour
     }
 }
 */
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Pen : MonoBehaviour
-{
-    [Header("Pen Properties")]
-    public Transform tip;
-    public Material drawingMaterial;
-    public Material tipMaterial;
-    [Range(0.01f, 0.1f)]
-    public float penWidth = 0.015f;
-    public Color[] penColors;
-
-    public Transform rightHand;
-    public Transform leftHand;
-    public float grabDistance = 0.05f;
-
-    [Header("Drawing Surface")]
-    //public GameObject canvasBox; // Reference to the specific object you want to draw on
-
-    public float offsetDistance = 0.001f;
-    private LineRenderer currentDrawing;
-    private int index;
-    private int currentColorIndex;
-
-    private void Start()
-    {
-        currentColorIndex = 0;
-        tipMaterial.color = penColors[currentColorIndex];
-    }
-
-    private void Update()
-    {
-        bool rightHandNear = Vector3.Distance(rightHand.position, transform.position) <= grabDistance;
-        bool leftHandNear = Vector3.Distance(leftHand.position, transform.position) <= grabDistance;
-        //bool isRightHandDrawing = rightHandNear && OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger);
-        //bool isLeftHandDrawing = leftHandNear && OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger);
-
-        
-        if (OVRInput.GetDown(OVRInput.Button.One))
-        {
-            SwitchColor();
-        }
-    }
-
-
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // Start drawing if the pen touches the canvasBox
-        if (other.gameObject.name == "canvasBox")
-        {
-            StartDrawing();
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        // Continue drawing as long as the pen stays on the canvasBox
-        if (other.gameObject.name == "canvasBox")
-        {
-            Draw();
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        // Stop drawing when the pen leaves the canvasBox
-        if (other.gameObject.name == "canvasBox")
-        {
-            currentDrawing = null;
-        }
-    }
-
-    private void StartDrawing()
-    {
-        GameObject door = GameObject.Find("openingDoor");
-        if (door != null)
-        {
-            door.SetActive(false);
-        }
-
-        // Initialize a new LineRenderer when starting to draw
-        index = 0;
-        currentDrawing = new GameObject("SurfaceDrawing").AddComponent<LineRenderer>();
-        currentDrawing.material = drawingMaterial;
-        currentDrawing.startColor = currentDrawing.endColor = penColors[currentColorIndex];
-        currentDrawing.startWidth = currentDrawing.endWidth = penWidth;
-        currentDrawing.positionCount = 1;
-        currentDrawing.SetPosition(0, tip.position);
-    }
-
-    private void Draw()
-    {
-        if (currentDrawing != null)
-        {
-            var currentPos = currentDrawing.GetPosition(index);
-            if (Vector3.Distance(currentPos, tip.position) > 0.01f)
-            {
-                index++;
-                currentDrawing.positionCount = index + 1;
-                currentDrawing.SetPosition(index, tip.position);
-            }
-        }
-    }
-
-    private void SwitchColor()
-    {
-        if (penColors.Length == 0) return;
-
-        currentColorIndex = (currentColorIndex + 1) % penColors.Length;
-        tipMaterial.color = penColors[currentColorIndex];
-    }
-}

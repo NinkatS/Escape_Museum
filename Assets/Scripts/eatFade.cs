@@ -1,46 +1,3 @@
-/*using System.Collections;
-using UnityEngine;
-
-public class eatFade : MonoBehaviour
-{
-    public GameObject object2; // Reference to object2
-    public float fadeDuration = 2.0f; // Duration of the fade effect in seconds
-
-    private bool isFading = false; // To prevent multiple fade routines
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // Check if the colliding object is object2
-        if (other.gameObject == object2 && !isFading)
-        {
-            StartCoroutine(FadeOut()); // Start fading out
-        }
-    }
-
-    private IEnumerator FadeOut()
-    {
-        isFading = true;
-
-        // Get the renderer and material of object1
-        Renderer renderer = GetComponent<Renderer>();
-        Color originalColor = renderer.material.color;
-
-        // Fade out over the specified duration
-        float elapsedTime = 0f;
-        while (elapsedTime < fadeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration); // Gradually decrease alpha
-            renderer.material.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            yield return null;
-        }
-
-        // Completely transparent and then destroy object1
-        renderer.material.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
-        Destroy(gameObject); // Destroy object1 after fading out
-    }
-}*/
-
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -130,3 +87,45 @@ public class eatFade : MonoBehaviour
 
 }
 
+/*using System.Collections;
+using UnityEngine;
+
+public class eatFade : MonoBehaviour
+{
+    public GameObject object2; // Reference to object2
+    public float fadeDuration = 2.0f; // Duration of the fade effect in seconds
+
+    private bool isFading = false; // To prevent multiple fade routines
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Check if the colliding object is object2
+        if (other.gameObject == object2 && !isFading)
+        {
+            StartCoroutine(FadeOut()); // Start fading out
+        }
+    }
+
+    private IEnumerator FadeOut()
+    {
+        isFading = true;
+
+        // Get the renderer and material of object1
+        Renderer renderer = GetComponent<Renderer>();
+        Color originalColor = renderer.material.color;
+
+        // Fade out over the specified duration
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration); // Gradually decrease alpha
+            renderer.material.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+
+        // Completely transparent and then destroy object1
+        renderer.material.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
+        Destroy(gameObject); // Destroy object1 after fading out
+    }
+}*/
